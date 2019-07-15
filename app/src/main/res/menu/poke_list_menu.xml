@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+            android:id="@+id/search_bar"
+            android:title="@string/search"
+            android:textColor="#FFFFFF"
+            android:icon="@drawable/ic_search"
+            app:showAsAction="ifRoom|collapseActionView"
+            app:actionViewClass="androidx.appcompat.widget.SearchView"/>
+
+    <item
+            android:id="@+id/nuke_pokemons_menu_button"
+            android:title="@string/nuke_database"/>
+
+    <item
+            android:id="@+id/nuke_entries_menu_button"
+            android:title="@string/nuke_entries"
+        />
+</menu>
