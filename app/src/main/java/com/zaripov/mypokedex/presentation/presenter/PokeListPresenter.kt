@@ -1,6 +1,7 @@
 package com.zaripov.mypokedex.presentation.presenter
 
 import android.util.Log
+import androidx.annotation.VisibleForTesting
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import com.zaripov.mypokedex.presentation.view.PokeListView
@@ -32,7 +33,7 @@ class PokeListPresenter : MvpPresenter<PokeListView>() {
     /**
      * To check if entries BD is empty and load the list
      */
-    private fun firstEntryLoad() {
+    internal fun firstEntryLoad() {
         Log.i("PokeListPresenter", "first entry load")
         viewState.onStartLoading()
 

@@ -31,6 +31,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
 
     dataBinding {
         enabled = true
@@ -89,4 +94,9 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    testImplementation 'androidx.test:core:1.2.0'
+    testImplementation "org.mockito:mockito-core:$mockito_version"
+    testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0'
+    testImplementation "org.hamcrest:hamcrest:$hamcrest_version"
+    testImplementation "org.robolectric:robolectric:$robolectric_version"
 }

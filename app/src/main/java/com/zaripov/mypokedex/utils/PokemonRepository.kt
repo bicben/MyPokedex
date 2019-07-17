@@ -9,23 +9,23 @@ import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
 
-class PokemonRepository(
+open class PokemonRepository(
     private val pokeDatabaseService: PokemonDatabaseService,
     private val pokeApiService: PokeService
 ) {
 
-    fun initEntries(): Single<List<PokeListEntry>> {
+    open fun initEntries(): Single<List<PokeListEntry>> {
         return Single.concat(pokeDatabaseService.getEntries(""), fetchAndCacheEntries())
             .filter { it.isNotEmpty() }
             .firstElement()
             .toSingle()
     }
 
-    fun getEntries(query: String): Single<List<PokeListEntry>> {
+    open fun getEntries(query: String): Single<List<PokeListEntry>> {
         return pokeDatabaseService.getEntries(query)
     }
 
-    fun getPokemon(query: Int): Single<Pokemon> {
+    open fun getPokemon(query: Int): Single<Pokemon> {
         Log.i("Poke Repo", "getting a pokemon: $query")
         return Maybe.concat(pokeDatabaseService.getPokemon(query), fetchAndCachePokemon(query))
             .firstElement()
@@ -53,12 +53,12 @@ class PokemonRepository(
             .andThen(fetch.toMaybe())
     }
 
-    fun deletePokemons(): Completable{
+    open fun deletePokemons(): Completable{
         Log.i("Poke Repo", "DROPPING THE POKEMON TABLE!")
         return pokeDatabaseService.deletePokemons()
     }
 
-    fun deleteEntries(): Completable{
+    open fun deleteEntries(): Completable{
         Log.i("Poke Repo", "DROPPING THE ENTRIES TABLE!")
         return pokeDatabaseService.deleteEntries()
     }

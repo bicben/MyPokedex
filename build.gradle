@@ -13,6 +13,9 @@ buildscript {
         rxandroid_version = "2.1.1"
         room_version = "2.1.0"
         glide_version = "4.9.0"
+        hamcrest_version = "2.1"
+        mockito_version = "3.0.0"
+        robolectric_version = "4.3"
     }
     repositories {
         google()

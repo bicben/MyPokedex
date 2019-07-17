@@ -1,5 +1,6 @@
 package com.zaripov.mypokedex.utils
 
+import androidx.annotation.VisibleForTesting
 import io.reactivex.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
