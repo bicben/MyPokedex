@@ -14,6 +14,10 @@ open class PokemonRepository(
     private val pokeApiService: PokeService
 ) {
 
+    companion object {
+        const val TAG = "PokemonRepository"
+    }
+
     open fun initEntries(): Single<List<PokeListEntry>> {
         return Single.concat(pokeDatabaseService.getEntries(""), fetchAndCacheEntries())
             .filter { it.isNotEmpty() }
@@ -26,7 +30,7 @@ open class PokemonRepository(
     }
 
     open fun getPokemon(query: Int): Single<Pokemon> {
-        Log.i("Poke Repo", "getting a pokemon: $query")
+        Log.i(TAG, "Requesting a pokemon: $query")
         return Maybe.concat(pokeDatabaseService.getPokemon(query), fetchAndCachePokemon(query))
             .firstElement()
             .toSingle()
@@ -36,7 +40,6 @@ open class PokemonRepository(
         val fetch = pokeApiService.getPokemonEntries().map { it.entryList }.cache()
 
         return fetch.flatMapCompletable {
-            Log.i("Poke Repo", "Inserting entries...")
             pokeDatabaseService.insertEntries(it)
         }
             .andThen(fetch)
@@ -47,19 +50,16 @@ open class PokemonRepository(
 
         return fetch
             .flatMapCompletable {
-                Log.i("Poke Repo", "inserting a pokemon: $it")
                 pokeDatabaseService.insertPokemon(it)
             }
             .andThen(fetch.toMaybe())
     }
 
-    open fun deletePokemons(): Completable{
-        Log.i("Poke Repo", "DROPPING THE POKEMON TABLE!")
+    open fun deletePokemons(): Completable {
         return pokeDatabaseService.deletePokemons()
     }
 
-    open fun deleteEntries(): Completable{
-        Log.i("Poke Repo", "DROPPING THE ENTRIES TABLE!")
+    open fun deleteEntries(): Completable {
         return pokeDatabaseService.deleteEntries()
     }
 }

@@ -7,34 +7,40 @@ import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
 
-class PokemonDatabaseService(private val dao: PokemonDao) {
+open class PokemonDatabaseService(private val dao: PokemonDao) {
+    companion object{
+        const val TAG = "PokemonDatabaseService"
+    }
 
-
-    fun getEntries(query: String): Single<List<PokeListEntry>> {
+    open fun getEntries(query: String): Single<List<PokeListEntry>> {
         return if (query.isBlank())
             dao.getAllEntries()
         else
             dao.getEntries(query)
     }
 
-    fun getPokemon(entry: Int): Maybe<Pokemon>{
-        Log.i("PokeDB", "queueing a pokemon $entry")
+    open fun getPokemon(entry: Int): Maybe<Pokemon>{
+        Log.i(TAG, "queueing a pokemon $entry")
         return dao.getPokemon(entry)
     }
 
-    fun insertEntries(entries: List<PokeListEntry>): Completable{
+    open fun insertEntries(entries: List<PokeListEntry>): Completable{
+        Log.i(TAG, "Inserting entries...")
         return dao.insertAllEntries(entries)
     }
 
-    fun insertPokemon(pokemon: Pokemon): Completable{
+    open fun insertPokemon(pokemon: Pokemon): Completable{
+        Log.i(TAG, "inserting a pokemon: $pokemon")
         return dao.insertPokemon(pokemon)
     }
 
     fun deletePokemons(): Completable{
+        Log.i(TAG, "DROPPING THE POKEMON TABLE!")
         return dao.deleteAllPokemons()
     }
 
     fun deleteEntries(): Completable{
+        Log.i(TAG, "DROPPING THE ENTRIES TABLE!")
         return dao.deleteAllEntries()
     }
 }

@@ -3,40 +3,26 @@ package com.zaripov.mypokedex.presentation.presenter
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.zaripov.mypokedex.di.component.AppComponent
-import com.zaripov.mypokedex.model.PokeListEntry
 import com.zaripov.mypokedex.model.Pokemon
-import com.zaripov.mypokedex.model.PokemonType
 import com.zaripov.mypokedex.presentation.view.`PokeDetailsView$$State`
+import com.zaripov.mypokedex.testutils.Helpers
 import com.zaripov.mypokedex.testutils.SchedulersRule
 import com.zaripov.mypokedex.testutils.TestComponent
 import com.zaripov.mypokedex.testutils.TestComponentRule
 import com.zaripov.mypokedex.utils.PokemonRepository
 import io.reactivex.Single
-import io.reactivex.internal.operators.completable.CompletableEmpty
 import org.junit.Before
 import org.junit.Test
 
-import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.*
-import org.mockito.Mockito
 import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class PokeDetailsPresenterTest {
-    companion object{
-        val testPoke = Pokemon(1,
-            "Shiny Bulbasaur",
-            7,
-            69,
-            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/1.png",
-            PokemonType.POISON,
-            PokemonType.GRASS)
-    }
 
     @Rule
     @JvmField
@@ -47,7 +33,7 @@ class PokeDetailsPresenterTest {
     val schedulers = SchedulersRule()
 
     val pokeRepo = mock<PokemonRepository> {
-        on {getPokemon(anyInt())} doReturn Single.just(testPoke)
+        on {getPokemon(anyInt())} doReturn Single.just(Helpers.testPoke1)
     }
 
     private val viewState: `PokeDetailsView$$State` = mock()

@@ -2,10 +2,9 @@ package com.zaripov.mypokedex.presentation.presenter
 
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import com.zaripov.mypokedex.di.component.AppComponent
-import com.zaripov.mypokedex.model.PokeListEntry
 import com.zaripov.mypokedex.presentation.view.`PokeListView$$State`
+import com.zaripov.mypokedex.testutils.Helpers
 import com.zaripov.mypokedex.testutils.SchedulersRule
 import com.zaripov.mypokedex.testutils.TestComponent
 import com.zaripov.mypokedex.testutils.TestComponentRule
@@ -16,8 +15,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Answers
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.ArgumentMatchers.anyList
 import org.mockito.ArgumentMatchers.anyBoolean
@@ -37,8 +34,8 @@ class PokeListPresenterTest {
     val schedulers = SchedulersRule()
 
     val pokeRepo = mock<PokemonRepository> {
-        on { initEntries() } doReturn Single.just(listOf(PokeListEntry(999, "Stubby")))
-        on { getEntries(anyString()) } doReturn Single.just(listOf(PokeListEntry(666, "Mocky")))
+        on { initEntries() } doReturn Single.just(Helpers.testEntries1)
+        on { getEntries(anyString()) } doReturn Single.just(Helpers.testEntries1)
         on { deleteEntries() } doReturn CompletableEmpty.INSTANCE
         on { deletePokemons() } doReturn CompletableEmpty.INSTANCE
     }
@@ -72,7 +69,7 @@ class PokeListPresenterTest {
     }
 
     @Test
-    fun onQueryEntriesSuccess(){
+    fun onQueryEntries(){
         presenter.queryEntries("blah")
 
         verify(viewState).onStartLoading()
