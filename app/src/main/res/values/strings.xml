@@ -14,4 +14,9 @@
     <string name="nuke_database">Nuke database</string>
     <string name="search">search</string>
     <string name="nuke_entries">Nuke entries</string>
+    <string name="confirmation">Confirmation</string>
+    <string name="yes">YES</string>
+    <string name="pokemon">Pokemon</string>
+    <string name="entry">Entry</string>
+    <string name="no">NO</string>
 </resources>

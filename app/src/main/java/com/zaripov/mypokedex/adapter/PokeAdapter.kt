@@ -10,13 +10,21 @@ import com.zaripov.mypokedex.databinding.PokeListEntryBinding
 import com.zaripov.mypokedex.model.PokeListEntry
 import io.reactivex.Completable
 import io.reactivex.internal.operators.completable.CompletableFromAction
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class PokeAdapter(private val clickListener: PokeListClickListener) :
     ListAdapter<PokeListEntry, PokeAdapter.PokeViewHolder>(PokeDiffCallback()) {
 
-    fun submitEntries(entries: List<PokeListEntry>): Completable{
-        return CompletableFromAction {
-            submitList(entries)
+    private val scope = CoroutineScope(Dispatchers.Default)
+
+    fun submitEntries(entries: List<PokeListEntry>) {
+        scope.launch {
+            withContext(Dispatchers.Main){
+                submitList(entries)
+            }
         }
     }
 

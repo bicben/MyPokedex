@@ -27,14 +27,7 @@ import java.util.concurrent.TimeUnit
 
 class PokeListFragment : MvpAppCompatFragment(), PokeListView, PokeListClickListener {
     companion object {
-
         const val TAG = "PokeListFragment"
-        fun newInstance(): PokeListFragment {
-            val fragment: PokeListFragment = PokeListFragment()
-            val args: Bundle = Bundle()
-            fragment.arguments = args
-            return fragment
-        }
     }
 
     @InjectPresenter
@@ -84,23 +77,14 @@ class PokeListFragment : MvpAppCompatFragment(), PokeListView, PokeListClickList
     }
 
     override fun searchFieldEnabled(enabled: Boolean) {
-        searchView.inputType = when(enabled){
+        searchView.inputType = when (enabled) {
             true -> InputType.TYPE_CLASS_TEXT
             false -> InputType.TYPE_NULL
         }
     }
 
     override fun setEntries(entries: List<PokeListEntry>) {
-//        disposables.add(listAdapter.submitEntries(entries)
-//            .applySchedulers()
-//            .subscribe ({
-//                onFinishLoading(entries.isEmpty())
-//            },{
-//                showError(it.toString())
-//            })
-//        )
-        listAdapter.submitList(entries)
-        onFinishLoading(entries.isEmpty())
+        listAdapter.submitEntries(entries)
     }
 
     override fun cancelError() {
@@ -150,12 +134,21 @@ class PokeListFragment : MvpAppCompatFragment(), PokeListView, PokeListClickList
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            R.id.nuke_pokemons_menu_button -> mPokeListPresenter.nukePokeDatabase()
-            R.id.nuke_entries_menu_button -> mPokeListPresenter.nukeEntryDatabase()
+        when (item.itemId) {
+            R.id.nuke_pokemons_menu_button -> onNuking(getString(R.string.pokemon)) { mPokeListPresenter.nukePokeDatabase() }
+            R.id.nuke_entries_menu_button -> onNuking(getString(R.string.entry)) { mPokeListPresenter.nukeEntryDatabase() }
         }
 
         return false
+    }
+
+    private fun onNuking(type: String, func: () -> Unit) {
+        alertDialog = AlertDialog.Builder(context)
+            .setTitle(getString(R.string.confirmation))
+            .setMessage("Are you sure you want to wipe the $type database?")
+            .setPositiveButton(getString(R.string.yes)) { dialog, _ -> func(); dialog.dismiss() }
+            .setNegativeButton(getString(R.string.no)) { dialog, _ -> dialog.dismiss() }
+            .show()
     }
 
     override fun onDestroy() {

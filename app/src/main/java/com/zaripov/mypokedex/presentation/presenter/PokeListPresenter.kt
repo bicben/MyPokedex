@@ -44,6 +44,7 @@ class PokeListPresenter : MvpPresenter<PokeListView>() {
                     Log.i("PokeListPresenter", "on load finish. Items loaded: ${it.size}")
                     viewState.searchFieldEnabled(true)
                     viewState.setEntries(it)
+                    viewState.onFinishLoading(it.isEmpty())
                 },
                     {
                         Log.e("PokeListPresenter", it.toString())
@@ -63,7 +64,7 @@ class PokeListPresenter : MvpPresenter<PokeListView>() {
                     {
                         Log.i("PokeListPresenter", "on load finish. Items loaded: ${it.size}")
                         viewState.setEntries(it)
-
+                        viewState.onFinishLoading(it.isEmpty())
                     }, {
                         Log.e("PokeListPresenter", it.toString())
                         viewState.showError(it.toString())

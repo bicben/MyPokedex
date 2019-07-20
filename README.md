@@ -5,10 +5,6 @@ The app is using https://pokeapi.co/ https://github.com/PokeAPI/pokeapi API whic
 Make sure to donate to it to keep it up, also follow it's fair use policy https://pokeapi.co/docs/v2.html#fairuse.
 One of the rules is to cache the query results which is done in this app using rxjava2 and Room.
 
-The app currently lacks tests and has several bugs:
-rare random crashes, 
-the issue with async submitList() function for the recyclerview adapter which randomly throws android.view.ViewRoot$CalledFromWrongThreadException (currently commented out)
-
 Feel free to browse/pull/fork 
 
 A brief list of technologies used: 
