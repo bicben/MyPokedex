@@ -74,12 +74,19 @@ dependencies {
     // Rx
     implementation "io.reactivex.rxjava2:rxkotlin:$rxkotlin_version"
     implementation "io.reactivex.rxjava2:rxandroid:$rxandroid_version"
+    implementation "com.jakewharton.rxbinding3:rxbinding:$rxbinding_version"
+    implementation "com.jakewharton.rxbinding3:rxbinding-core:$rxbinding_version"
+    implementation "com.jakewharton.rxbinding3:rxbinding-appcompat:$rxbinding_version"
 
     // Moxy
     implementation 'tech.schoolhelper:moxy-x:1.7.0'
     implementation 'tech.schoolhelper:moxy-x-android:1.7.0'
     implementation 'tech.schoolhelper:moxy-x-androidx:1.7.0'
     kapt 'tech.schoolhelper:moxy-x-compiler:1.7.0'
+
+    // Paging
+    implementation "androidx.paging:paging-runtime-ktx:$paging_version"
+    implementation "androidx.paging:paging-rxjava2-ktx:$paging_version"
 
     // Room database
     implementation "androidx.room:room-runtime:$room_version"
@@ -94,6 +101,9 @@ dependencies {
     implementation "com.github.bumptech.glide:glide:$glide_version"
     kapt "com.github.bumptech.glide:compiler:$glide_version"
 
+    // Logging
+    implementation "com.jakewharton.timber:timber:$timber_version"
+
     // TEST
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
@@ -104,4 +114,5 @@ dependencies {
     testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0'
     testImplementation "org.hamcrest:hamcrest:$hamcrest_version"
     testImplementation "org.robolectric:robolectric:$robolectric_version"
+    testImplementation "androidx.paging:paging-common-ktx:$paging_version"
 }

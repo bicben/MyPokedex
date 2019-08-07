@@ -9,28 +9,28 @@
                   type="com.zaripov.mypokedex.adapter.PokeListClickListener"/>
     </data>
     <LinearLayout android:orientation="horizontal"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:layout_marginBottom="4dp"
-                  android:layout_marginTop="4dp"
-                  android:padding="4dp"
-                  android:onClick ="@{() -> clickListener.onClick(item.entryNum)}">
+                  android:onClick ="@{() -> clickListener.onClick(item.entryNum)}"
+                  style="@style/entry_layout_style">
 
         <TextView
                 android:id="@+id/tv_list_entry_number"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="@dimen/entry_size"
+                android:layout_height="@dimen/entry_size"
                 android:layout_weight="0"
                 android:textAlignment="center"
                 tools:text="150"
                 android:textSize="18sp"
                 android:gravity="center_vertical"
                 app:bind_entry_num="@{item}"/>
+        <View
+                android:background="?colorPrimary"
+                android:layout_width="1dp"
+                android:layout_height="@dimen/entry_size"/>
         <TextView
                 android:id="@+id/tv_list_entry_text"
                 tools:text="Mewto"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:textSize="18sp"
                 android:gravity="center_vertical"

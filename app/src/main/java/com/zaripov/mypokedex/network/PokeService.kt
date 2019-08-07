@@ -6,31 +6,17 @@ import com.zaripov.mypokedex.model.PokeListEntry
 import com.zaripov.mypokedex.model.PokeListEntryWrapper
 import com.zaripov.mypokedex.model.Pokemon
 import io.reactivex.Single
+import timber.log.Timber
 
 open class PokeService(private val pokeApi: PokeApi) {
 
     open fun getPokemonEntries(): Single<PokeListEntryWrapper> {
-        Log.i("PokeService", "fetching entries...")
+        Timber.i("fetching entries...")
         return pokeApi.getPokemonList()
     }
 
     open fun getPokemon(entry: String): Single<Pokemon> {
-        Log.i("PokeService", "fetching a pokemon $entry")
+        Timber.i( "fetching a pokemon $entry")
         return pokeApi.getPokemon(entry)
-    }
-
-
-
-
-
-
-    fun getText(): Single<String>{
-        Log.i("PokeService", "text1...")
-        return pokeApi.getText()
-    }
-
-    fun getText2(query: String): Single<String> {
-        Log.i("PokeService", "text2...")
-        return pokeApi.getPokemonText(query)
     }
 }

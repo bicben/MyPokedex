@@ -1,6 +1,7 @@
 package com.zaripov.mypokedex.database
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.paging.toObservable
 import androidx.room.Room
 import androidx.test.platform.app.InstrumentationRegistry
 import com.zaripov.mypokedex.testutils.Helpers
@@ -40,7 +41,7 @@ class DataBaseTest {
 
     @Test
     fun getEntriesWhenNoEntriesInserted() {
-        dao.getAllEntries()
+        dao.getAllEntries().toObservable(5)
             .test()
             .assertValue { it.isEmpty() }
     }
@@ -67,7 +68,7 @@ class DataBaseTest {
     fun insertEntryAndQueryItByName() {
         dao.insertAllEntries(Helpers.testEntries1).blockingAwait()
 
-        dao.getEntries(Helpers.testEntries1[0].name)
+        dao.getEntries(Helpers.testEntries1[0].name).toObservable(5)
             .test()
             .assertValue {
                 it[0] == Helpers.testEntries1[0] &&
@@ -90,7 +91,7 @@ class DataBaseTest {
         dao.insertAllEntries(Helpers.testEntries1).blockingAwait()
 
         dao.deleteAllEntries().blockingAwait()
-        dao.getAllEntries()
+        dao.getAllEntries().toObservable(5)
             .test()
             .assertValue { it.isEmpty() }
     }

@@ -34,7 +34,7 @@ class PokeListPresenterTest {
     val schedulers = SchedulersRule()
 
     val pokeRepo = mock<PokemonRepository> {
-        on { initEntries() } doReturn Single.just(Helpers.testEntries1)
+        on { fetchEntriesIfNeeded() } doReturn Single.just(Helpers.testEntries1)
         on { getEntries(anyString()) } doReturn Single.just(Helpers.testEntries1)
         on { deleteEntries() } doReturn CompletableEmpty.INSTANCE
         on { deletePokemons() } doReturn CompletableEmpty.INSTANCE

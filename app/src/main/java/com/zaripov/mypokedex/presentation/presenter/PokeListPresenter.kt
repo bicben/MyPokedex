@@ -1,15 +1,18 @@
 package com.zaripov.mypokedex.presentation.presenter
 
 import android.util.Log
-import androidx.annotation.VisibleForTesting
+import androidx.paging.PagedList
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
+import com.zaripov.mypokedex.model.PokeListEntry
 import com.zaripov.mypokedex.presentation.view.PokeListView
 import com.zaripov.mypokedex.utils.PokeApp
 import com.zaripov.mypokedex.utils.PokemonRepository
 import com.zaripov.mypokedex.utils.applySchedulers
 import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import timber.log.Timber
 import javax.inject.Inject
 
 @InjectViewState
@@ -25,51 +28,48 @@ class PokeListPresenter : MvpPresenter<PokeListView>() {
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
-        Log.i("PokeListPresenter", "on first view attach")
+        Timber.i("on first view attach")
         firstEntryLoad()
-        //loadText()
+    }
+
+    fun getEntryList(query: String): Observable<PagedList<PokeListEntry>> {
+        return pokemonRepository.getEntries(query)
     }
 
     /**
      * To check if entries BD is empty and load the list
      */
     internal fun firstEntryLoad() {
-        Log.i("PokeListPresenter", "first entry load")
-        viewState.onStartLoading()
+        Timber.i("first entry load")
 
         disposables.add(
-            pokemonRepository.initEntries()
-                .applySchedulers()
+            pokemonRepository.getEntries("")
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    Log.i("PokeListPresenter", "on load finish. Items loaded: ${it.size}")
-                    viewState.searchFieldEnabled(true)
-                    viewState.setEntries(it)
-                    viewState.onFinishLoading(it.isEmpty())
+                    if (it.isNotEmpty()) {
+                        Timber.i("on load finish. Items loaded: ${it.size}")
+                        viewState.setEntries(it)
+                        viewState.onFinishLoading(false)
+                        viewState.searchFieldEnabled(true)
+                    } else{
+                        Timber.i("Entry DB is empty, Fetching is needed")
+                        fetchEntries()
+                    }
                 },
                     {
-                        Log.e("PokeListPresenter", it.toString())
+                        Timber.e(it)
                         viewState.showError(it.toString())
                     })
         )
     }
 
-    fun queryEntries(query: String) {
-        Log.i("PokeListPresenter", "loading entries for $query ...")
-        viewState.onStartLoading()
-
-        disposables.add(
-            pokemonRepository.getEntries(query)
-                .applySchedulers()
-                .subscribe(
-                    {
-                        Log.i("PokeListPresenter", "on load finish. Items loaded: ${it.size}")
-                        viewState.setEntries(it)
-                        viewState.onFinishLoading(it.isEmpty())
-                    }, {
-                        Log.e("PokeListPresenter", it.toString())
-                        viewState.showError(it.toString())
-                    }
-                )
+    private fun fetchEntries(){
+        disposables.add(pokemonRepository.fetchAndCacheEntries()
+            .subscribe({
+                Timber.i("Entries have been fetched and stored in DB")
+            },{
+                Timber.e(it)
+            })
         )
     }
 
@@ -80,10 +80,10 @@ class PokeListPresenter : MvpPresenter<PokeListView>() {
             pokemonRepository.deletePokemons()
                 .applySchedulers()
                 .subscribe({
-                    Log.i("PokeListPresenter", "Pokemons were deleted successfully!")
+                    Timber.i("Pokemons were deleted successfully!")
                     viewState.onFinishLoading(false)
                 }, {
-                    Log.e("PokeListPresenter", it.toString())
+                    Timber.e(it)
                     viewState.showError(it.toString())
                 })
         )
@@ -97,11 +97,9 @@ class PokeListPresenter : MvpPresenter<PokeListView>() {
             pokemonRepository.deleteEntries()
                 .applySchedulers()
                 .subscribe({
-                    Log.i("PokeListPresenter", "Entries were deleted successfully!")
-                    firstEntryLoad()
-
+                    Timber.i("Entries were deleted successfully!")
                 }, {
-                    Log.e("PokeListPresenter", it.toString())
+                    Timber.e(it)
                     viewState.showError(it.toString())
                 })
         )

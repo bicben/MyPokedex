@@ -7,8 +7,10 @@ import android.util.Log
 import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.navigation.fragment.findNavController
+import androidx.paging.PagedList
 import com.arellomobile.mvp.MvpAppCompatFragment
 import com.arellomobile.mvp.presenter.InjectPresenter
+import com.jakewharton.rxbinding3.appcompat.queryTextChanges
 import com.zaripov.mypokedex.R
 import com.zaripov.mypokedex.adapter.PokeAdapter
 import com.zaripov.mypokedex.adapter.PokeListClickListener
@@ -23,13 +25,10 @@ import io.reactivex.FlowableOnSubscribe
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 class PokeListFragment : MvpAppCompatFragment(), PokeListView, PokeListClickListener {
-    companion object {
-        const val TAG = "PokeListFragment"
-    }
-
     @InjectPresenter
     lateinit var mPokeListPresenter: PokeListPresenter
 
@@ -38,6 +37,7 @@ class PokeListFragment : MvpAppCompatFragment(), PokeListView, PokeListClickList
     private lateinit var alertDialog: AlertDialog
     private lateinit var searchView: SearchView
     private val disposables = CompositeDisposable()
+    private var isSearchViewEnabled = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -51,14 +51,14 @@ class PokeListFragment : MvpAppCompatFragment(), PokeListView, PokeListClickList
     }
 
     override fun onStartLoading() {
-        Log.i(TAG, "on start loading")
+        Timber.i("on start loading")
         binding.rvPokeList.visibility = View.GONE
         binding.probarPokeList.visibility = View.VISIBLE
         binding.emptyView.visibility = View.GONE
     }
 
     override fun onFinishLoading(emptyList: Boolean) {
-        Log.i(TAG, "on finish loading")
+        Timber.i("on finish loading")
         binding.rvPokeList.visibility = View.VISIBLE
         binding.probarPokeList.visibility = View.GONE
         if (emptyList) {
@@ -81,10 +81,11 @@ class PokeListFragment : MvpAppCompatFragment(), PokeListView, PokeListClickList
             true -> InputType.TYPE_CLASS_TEXT
             false -> InputType.TYPE_NULL
         }
+        isSearchViewEnabled = enabled
     }
 
-    override fun setEntries(entries: List<PokeListEntry>) {
-        listAdapter.submitEntries(entries)
+    override fun setEntries(entries: PagedList<PokeListEntry>) {
+        listAdapter.submitList(entries)
     }
 
     override fun cancelError() {
@@ -94,7 +95,7 @@ class PokeListFragment : MvpAppCompatFragment(), PokeListView, PokeListClickList
     }
 
     override fun onClick(entry: Int) {
-        Log.i(TAG, "clicked on entry: $entry")
+        Timber.i("clicked on entry: $entry")
         this.findNavController().navigate(
             PokeListFragmentDirections.actionPokeListFragmentToPokeDetailsFragment(entry)
         )
@@ -107,28 +108,24 @@ class PokeListFragment : MvpAppCompatFragment(), PokeListView, PokeListClickList
         searchFieldEnabled(false)
 
         disposables.add(
-            Flowable.create(FlowableOnSubscribe<String> { subscriber ->
-                searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                    override fun onQueryTextSubmit(query: String?): Boolean {
-                        subscriber.onNext(query!!)
-                        return false
-                    }
-
-                    override fun onQueryTextChange(newText: String?): Boolean {
-                        subscriber.onNext(newText!!)
-                        return false
-                    }
-                })
-            }, BackpressureStrategy.LATEST)
-                .subscribeOn(Schedulers.io())
-                .map { text -> text.trim() }
-                .debounce(200, TimeUnit.MILLISECONDS)
+            searchView.queryTextChanges()
+                .skipInitialValue()
+                .skip(1)
+                .map { it.toString() }
+                .map { it.trim() }
+                .debounce(250, TimeUnit.MILLISECONDS)
                 .distinctUntilChanged()
+                .switchMap {
+                    activity?.runOnUiThread { onStartLoading() }
+                    mPokeListPresenter.getEntryList(it)
+                }
+                .filter { isSearchViewEnabled }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    mPokeListPresenter.queryEntries(it)
+                    listAdapter.submitList(it)
+                    onFinishLoading(it.isEmpty())
                 }, {
-                    Log.e(TAG, it.toString())
+                    Timber.e(it.toString())
                 })
         )
     }

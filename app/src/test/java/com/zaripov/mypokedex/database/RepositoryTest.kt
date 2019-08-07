@@ -2,7 +2,6 @@ package com.zaripov.mypokedex.database
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.nhaarman.mockitokotlin2.*
-import com.zaripov.mypokedex.model.Pokemon
 import com.zaripov.mypokedex.network.PokeService
 import com.zaripov.mypokedex.testutils.Helpers
 import com.zaripov.mypokedex.testutils.SchedulersRule
@@ -10,7 +9,6 @@ import com.zaripov.mypokedex.utils.PokemonRepository
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
-import io.reactivex.internal.operators.completable.CompletableEmpty
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -53,7 +51,7 @@ class RepositoryTest {
     fun initEntriesReturnsResultFromApiDueToEmptyDb() {
         whenever(dbService.getEntries(anyString())).thenReturn(Single.just(listOf()))
 
-        assert(repo.initEntries().blockingGet()[0] == Helpers.testEntries2[0])
+        assert(repo.fetchEntriesIfNeeded().blockingGet()[0] == Helpers.testEntries2[0])
 
         verify(dbService).getEntries(anyString())
         verify(apiService).getPokemonEntries()
@@ -62,7 +60,7 @@ class RepositoryTest {
 
     @Test
     fun initEntriesReturnsResultFromDbAndNotFromApi() {
-        assert(repo.initEntries().blockingGet()[0] == Helpers.testEntries1[0])
+        assert(repo.fetchEntriesIfNeeded().blockingGet()[0] == Helpers.testEntries1[0])
 
         verify(dbService).getEntries(anyString())
         verify(apiService).getPokemonEntries()

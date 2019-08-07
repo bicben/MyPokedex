@@ -19,4 +19,5 @@
     <string name="pokemon">Pokemon</string>
     <string name="entry">Entry</string>
     <string name="no">NO</string>
+    <string name="loading">Loading…</string>
 </resources>

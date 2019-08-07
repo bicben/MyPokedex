@@ -1,5 +1,7 @@
 package com.zaripov.mypokedex.database
 
+import androidx.paging.DataSource
+import androidx.paging.PagedList
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -15,10 +17,10 @@ import io.reactivex.Single
 interface PokemonDao {
 
     @Query("select * from PokeListEntry")
-    fun getAllEntries(): Single<List<PokeListEntry>>
+    fun getAllEntries(): DataSource.Factory<Int, PokeListEntry>
 
     @Query("select * from PokeListEntry where entryNum = :query or name like '%' || :query || '%'")
-    fun getEntries(query: String): Single<List<PokeListEntry>>
+    fun getEntries(query: String): DataSource.Factory<Int, PokeListEntry>
 
     @Query("select * from Pokemon where entryNum = :entry")
     fun getPokemon(entry: Int): Maybe<Pokemon>

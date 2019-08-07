@@ -1,13 +1,16 @@
 package com.zaripov.mypokedex.utils
 
-import android.util.Log
+import androidx.paging.PagedList
+import androidx.paging.toObservable
 import com.zaripov.mypokedex.database.PokemonDatabaseService
 import com.zaripov.mypokedex.model.PokeListEntry
 import com.zaripov.mypokedex.model.Pokemon
 import com.zaripov.mypokedex.network.PokeService
 import io.reactivex.Completable
 import io.reactivex.Maybe
+import io.reactivex.Observable
 import io.reactivex.Single
+import timber.log.Timber
 
 open class PokemonRepository(
     private val pokeDatabaseService: PokemonDatabaseService,
@@ -15,34 +18,29 @@ open class PokemonRepository(
 ) {
 
     companion object {
-        const val TAG = "PokemonRepository"
+        val config = PagedList.Config.Builder()
+            .setEnablePlaceholders(true)
+            .setPageSize(10)
+            .build()
     }
 
-    open fun initEntries(): Single<List<PokeListEntry>> {
-        return Single.concat(pokeDatabaseService.getEntries(""), fetchAndCacheEntries())
-            .filter { it.isNotEmpty() }
-            .firstElement()
-            .toSingle()
-    }
-
-    open fun getEntries(query: String): Single<List<PokeListEntry>> {
-        return pokeDatabaseService.getEntries(query)
+    open fun getEntries(query: String): Observable<PagedList<PokeListEntry>> {
+        return pokeDatabaseService.getEntries(query).toObservable(config)
     }
 
     open fun getPokemon(query: Int): Single<Pokemon> {
-        Log.i(TAG, "Requesting a pokemon: $query")
+        Timber.i("Requesting a pokemon: $query")
         return Maybe.concat(pokeDatabaseService.getPokemon(query), fetchAndCachePokemon(query))
             .firstElement()
             .toSingle()
     }
 
-    private fun fetchAndCacheEntries(): Single<List<PokeListEntry>> {
-        val fetch = pokeApiService.getPokemonEntries().map { it.entryList }.cache()
-
-        return fetch.flatMapCompletable {
-            pokeDatabaseService.insertEntries(it)
-        }
-            .andThen(fetch)
+    fun fetchAndCacheEntries(): Completable {
+        return pokeApiService.getPokemonEntries()
+            .flatMapCompletable {
+                Timber.i("Parsing entries...")
+                pokeDatabaseService.insertEntries(it.entryList)
+            }
     }
 
     private fun fetchAndCachePokemon(query: Int): Maybe<Pokemon> {

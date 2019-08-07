@@ -1,11 +1,14 @@
 package com.zaripov.mypokedex.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.arellomobile.mvp.MvpDelegate
+import com.zaripov.mypokedex.R
 import com.zaripov.mypokedex.databinding.PokeListEntryBinding
 import com.zaripov.mypokedex.model.PokeListEntry
 import io.reactivex.Completable
@@ -16,25 +19,30 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class PokeAdapter(private val clickListener: PokeListClickListener) :
-    ListAdapter<PokeListEntry, PokeAdapter.PokeViewHolder>(PokeDiffCallback()) {
+    PagedListAdapter<PokeListEntry, RecyclerView.ViewHolder>(PokeDiffCallback()) {
 
-    private val scope = CoroutineScope(Dispatchers.Default)
+    companion object {
+        const val TYPE_ITEM = 1
+        const val TYPE_PLACEHOLDER = 0
+    }
 
-    fun submitEntries(entries: List<PokeListEntry>) {
-        scope.launch {
-            withContext(Dispatchers.Main){
-                submitList(entries)
-            }
+    override fun getItemViewType(position: Int): Int {
+        return when (getItem(position)) {
+            null -> TYPE_PLACEHOLDER
+            else -> TYPE_ITEM
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PokeViewHolder {
-        return PokeViewHolder.from(parent)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return when (viewType) {
+            TYPE_ITEM -> PokeViewHolder.from(parent)
+            else -> PokePlaceholder.from(parent)
+        }
     }
 
-    override fun onBindViewHolder(holder: PokeViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = getItem(position)
-        holder.bind(item, clickListener)
+        if (holder is PokeViewHolder) holder.bind(item!!, clickListener)
     }
 
     class PokeViewHolder private constructor(private val binding: PokeListEntryBinding) :
@@ -52,6 +60,19 @@ class PokeAdapter(private val clickListener: PokeListClickListener) :
                 val binding = PokeListEntryBinding.inflate(inflater, parent, false)
 
                 return PokeViewHolder(binding)
+            }
+        }
+    }
+
+    class PokePlaceholder private constructor(view: View):
+            RecyclerView.ViewHolder(view){
+        companion object{
+            fun from (parent: ViewGroup): PokePlaceholder{
+                val itemView = LayoutInflater
+                    .from(parent.context)
+                    .inflate(R.layout.poke_list_placeholder, parent, false)
+
+                return PokePlaceholder(itemView)
             }
         }
     }

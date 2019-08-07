@@ -8,7 +8,7 @@ import com.zaripov.mypokedex.di.component.AppComponent
 import com.zaripov.mypokedex.di.component.DaggerAppComponent
 import com.zaripov.mypokedex.di.module.ContextModule
 import io.reactivex.plugins.RxJavaPlugins
-
+import timber.log.Timber
 
 
 class PokeApp : Application() {
@@ -29,7 +29,9 @@ class PokeApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        RxJavaPlugins.setErrorHandler { throwable -> Log.e("PokeApp", throwable.toString())}
+        Timber.plant(Timber.DebugTree())
+
+        RxJavaPlugins.setErrorHandler { throwable -> Timber.e(throwable.toString())}
 
         appComponent = DaggerAppComponent.builder()
             .contextModule(ContextModule(this))
