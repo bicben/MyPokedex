@@ -1,6 +1,5 @@
 package com.zaripov.mypokedex.presentation.presenter
 
-import android.util.Log
 import androidx.paging.PagedList
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
