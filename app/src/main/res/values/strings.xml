@@ -20,4 +20,6 @@
     <string name="entry">Entry</string>
     <string name="no">NO</string>
     <string name="loading">Loading…</string>
+    <string name="weak_to">Weak to</string>
+    <string name="strong_against">Strong against</string>
 </resources>

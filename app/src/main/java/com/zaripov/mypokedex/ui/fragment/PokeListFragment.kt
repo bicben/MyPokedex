@@ -105,7 +105,9 @@ class PokeListFragment : MvpAppCompatFragment(), PokeListView, PokeListClickList
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.poke_list_menu, menu)
         searchView = menu.findItem(R.id.search_bar)?.actionView as SearchView
-        searchFieldEnabled(false)
+
+        // because onCreateOptionsMenu is called much later an additional checking is needed
+        if (!isSearchViewEnabled)searchFieldEnabled(false)
 
         disposables.add(
             searchView.queryTextChanges()
@@ -117,6 +119,7 @@ class PokeListFragment : MvpAppCompatFragment(), PokeListView, PokeListClickList
                 .distinctUntilChanged()
                 .switchMap {
                     activity?.runOnUiThread { onStartLoading() }
+                    Timber.i("$isSearchViewEnabled")
                     mPokeListPresenter.getEntryList(it)
                 }
                 .filter { isSearchViewEnabled }

@@ -2,4 +2,5 @@
 <resources>
     <dimen name="pokemon_image_view_size">96dp</dimen>
     <dimen name="entry_size">50dp</dimen>
+    <dimen name="poke_type_chip_width">80dp</dimen>
 </resources>
