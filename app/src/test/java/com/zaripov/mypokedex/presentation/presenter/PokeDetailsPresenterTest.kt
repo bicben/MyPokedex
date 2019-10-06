@@ -60,6 +60,11 @@ class PokeDetailsPresenterTest {
         verify(viewState).cancelError()
     }
 
+    @Test
+    fun tet(){
+
+    }
+
     private fun testAppComponent(): AppComponent {
         return object : TestComponent() {
             override fun inject(pokeDetailsPresenter: PokeDetailsPresenter) {

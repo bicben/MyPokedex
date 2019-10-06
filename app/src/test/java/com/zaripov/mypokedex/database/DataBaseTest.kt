@@ -41,7 +41,7 @@ class DataBaseTest {
 
     @Test
     fun getEntriesWhenNoEntriesInserted() {
-        dao.getAllEntries().toObservable(5)
+        dao.getAllEntries().toObservable(Helpers.testConfig)
             .test()
             .assertValue { it.isEmpty() }
     }
@@ -68,7 +68,7 @@ class DataBaseTest {
     fun insertEntryAndQueryItByName() {
         dao.insertAllEntries(Helpers.testEntries1).blockingAwait()
 
-        dao.getEntries(Helpers.testEntries1[0].name).toObservable(5)
+        dao.getEntries(Helpers.testEntries1[0].name).toObservable(Helpers.testConfig)
             .test()
             .assertValue {
                 it[0] == Helpers.testEntries1[0] &&
@@ -91,7 +91,7 @@ class DataBaseTest {
         dao.insertAllEntries(Helpers.testEntries1).blockingAwait()
 
         dao.deleteAllEntries().blockingAwait()
-        dao.getAllEntries().toObservable(5)
+        dao.getAllEntries().toObservable(Helpers.testConfig)
             .test()
             .assertValue { it.isEmpty() }
     }

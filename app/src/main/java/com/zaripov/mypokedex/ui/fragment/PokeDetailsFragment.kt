@@ -41,9 +41,11 @@ class PokeDetailsFragment : MvpAppCompatFragment(), PokeDetailsView {
         binding = FragmentPokeDetailsBinding.inflate(inflater)
         binding.lifecycleOwner = this
 
-        val entry = PokeDetailsFragmentArgs.fromBundle(arguments!!).pokemonEntry
-        Log.i(TAG, "entry received: $entry")
-        mPokeDetailsPresenter.loadPokemon(entry)
+        savedInstanceState ?: run {
+            val entry = PokeDetailsFragmentArgs.fromBundle(arguments!!).pokemonEntry
+            Log.i(TAG, "entry received: $entry")
+            mPokeDetailsPresenter.loadPokemon(entry)
+        }
 
         return binding.root
     }

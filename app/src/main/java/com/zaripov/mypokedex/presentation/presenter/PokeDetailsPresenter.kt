@@ -25,7 +25,6 @@ class PokeDetailsPresenter : MvpPresenter<PokeDetailsView>() {
         const val TAG = "PokeDetailsPresenter"
     }
 
-
     fun loadPokemon(entry: Int) {
         Log.i(TAG, "loading a pokemon with entry: $entry ...")
         disposables.add(pokemonRepository.getPokemon(entry)

@@ -28,9 +28,7 @@ class RepositoryTest {
     val schedulers = SchedulersRule()
 
     private val dbService = mock<PokemonDatabaseService> {
-        on { getEntries(anyString()) } doReturn Single.just(Helpers.testEntries1)
         on { getPokemon(anyInt()) } doReturn Maybe.just(Helpers.testPoke1)
-
         on { insertEntries(anyList()) } doReturn Completable.complete()
         on { insertPokemon(any()) } doReturn Completable.complete()
     }
@@ -45,26 +43,6 @@ class RepositoryTest {
     @Before
     fun setUp() {
         repo = PokemonRepository(dbService, apiService)
-    }
-
-    @Test
-    fun initEntriesReturnsResultFromApiDueToEmptyDb() {
-        whenever(dbService.getEntries(anyString())).thenReturn(Single.just(listOf()))
-
-        assert(repo.fetchEntriesIfNeeded().blockingGet()[0] == Helpers.testEntries2[0])
-
-        verify(dbService).getEntries(anyString())
-        verify(apiService).getPokemonEntries()
-        verify(dbService).insertEntries(anyList())
-    }
-
-    @Test
-    fun initEntriesReturnsResultFromDbAndNotFromApi() {
-        assert(repo.fetchEntriesIfNeeded().blockingGet()[0] == Helpers.testEntries1[0])
-
-        verify(dbService).getEntries(anyString())
-        verify(apiService).getPokemonEntries()
-        verify(dbService, never()).insertEntries(anyList())
     }
 
     @Test

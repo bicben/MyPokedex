@@ -6,7 +6,8 @@
     </data>
 
     <FrameLayout
-            android:layout_width="match_parent" android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             tools:context=".ui.fragment.PokeListFragment"
             android:padding="4dp">
 
